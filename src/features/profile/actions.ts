@@ -17,7 +17,7 @@ const schema = z
   .string()
   .trim()
   .max(200)
-  .refine((v) => v === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "Escribe tu usuario completo, por ejemplo 12345@live.uem.es.");
+  .refine((v) => v === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "Escribe tu usuario completo, por ejemplo tu-usuario@tu-universidad.es.");
 
 export async function saveUniversityLoginAction(_prev: LoginState, formData: FormData): Promise<LoginState> {
   const auth = await requireUser();

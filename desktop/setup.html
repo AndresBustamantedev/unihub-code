@@ -20,14 +20,20 @@
     <p class="notice" id="tokenNotice" hidden>Tu token de Canvas ha caducado o está a punto de caducar. Crea uno nuevo en Canvas, pégalo aquí y pulsa «Guardar»: lo demás no cambia.</p>
     <fieldset>
       <legend>Canvas</legend>
+      <label for="school">Tu universidad</label>
+      <div class="combo">
+        <input id="school" type="search" autocomplete="off" spellcheck="false" placeholder="Escribe el nombre, p. ej. «Europea» o «Católica de Chile»" role="combobox" aria-controls="schoolList" aria-expanded="false" aria-autocomplete="list">
+        <ul id="schoolList" class="results" role="listbox" hidden></ul>
+      </div>
+      <p class="hint" id="schoolHint">Funciona con cualquier universidad que use Canvas. Si no aparece, escribe abajo la dirección que ves en el navegador al entrar en tu campus.</p>
+
+      <label for="canvasBaseUrl">Dirección de tu campus Canvas</label>
+      <input id="canvasBaseUrl" name="canvasBaseUrl" type="text" inputmode="url" spellcheck="false" placeholder="campus.tu-universidad.es">
+
       <label for="canvasToken">Token de acceso de Canvas</label>
       <input id="canvasToken" name="canvasToken" type="password" autocomplete="off" spellcheck="false">
-      <p class="hint" id="tokenHint">En Canvas: <strong>Cuenta → Configuración → «+ Nuevo token de acceso»</strong>. Ponle la fecha de vencimiento más lejana que te deje (Canvas permite como mucho 30 días), copia el token y pégalo aquí. UniHub te avisará unos días antes de que caduque. <a href="#" id="openCanvas">Abrir Canvas</a></p>
+      <p class="hint" id="tokenHint">En Canvas: <strong>Cuenta → Configuración → «+ Nuevo token de acceso»</strong>. Ponle la fecha de vencimiento más lejana que te deje (algunas universidades lo limitan a 30 días), copia el token y pégalo aquí. UniHub te avisará unos días antes de que caduque. <a href="#" id="openCanvas">Abrir Canvas</a></p>
 
-      <details>
-        <summary>Dirección de Canvas (normalmente no hay que tocarla)</summary>
-        <input id="canvasBaseUrl" name="canvasBaseUrl" type="url" spellcheck="false">
-      </details>
     </fieldset>
 
     <fieldset>
@@ -46,6 +52,7 @@
 
     <p id="error" class="error" role="alert" hidden></p>
     <div class="actions">
+      <p class="demo" id="demoRow" hidden>¿Solo quieres verlo? <button type="button" class="link" id="demo">Probar con datos de ejemplo</button></p>
       <button type="submit" id="save">Guardar y abrir UniHub</button>
     </div>
   </form>

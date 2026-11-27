@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
+import { isLocalOnly } from "@/lib/local-only";
 
 // /api/cron se protege con CRON_SECRET (no hay sesión de usuario); /sw.js debe servirse sin login.
 const PUBLIC_PATHS = ["/login", "/acceso-denegado", "/auth/callback", "/auth/error", "/api/cron", "/api/desktop/shutdown",
@@ -25,6 +26,17 @@ function configError(): NextResponse | null {
 }
 
 export async function proxy(request: NextRequest) {
+  // Modo solo local (programa sin Supabase): no hay sesión que comprobar ni pantalla de acceso.
+  if (isLocalOnly()) {
+    const { pathname } = request.nextUrl;
+    if (pathname === "/login" || pathname === "/acceso-denegado") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next({ request });
+  }
   const misconfigured = configError();
   if (misconfigured) return misconfigured;
   const { response, user } = await updateSession(request);

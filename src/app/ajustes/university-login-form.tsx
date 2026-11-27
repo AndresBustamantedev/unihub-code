@@ -15,7 +15,7 @@ export function UniversityLoginForm({ value }: { value: string | null }) {
           type="email"
           autoComplete="off"
           defaultValue={value ?? ""}
-          placeholder="12345@live.uem.es"
+          placeholder="tu-usuario@tu-universidad.es"
           className="h-9 rounded-md border border-border bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
       </label>

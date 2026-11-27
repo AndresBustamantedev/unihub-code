@@ -14,6 +14,7 @@ const { LocalServer } = require("./lib/server");
 const { Scheduler } = require("./lib/sync");
 const folders = require("./lib/folders");
 const { Updater } = require("./lib/updater");
+const universities = require("./lib/universities");
 const fs = require("node:fs");
 
 const APP_ID = "com.unihub.desktop";
@@ -179,7 +180,8 @@ function openSetup(reason = null) {
   setupWindow.on("closed", async () => {
     setupWindow = null;
     // Si se cierra sin configurar nada la primera vez, no hay nada que mostrar.
-    if (!server.base && !(await store.load()).canvasToken) app.quit();
+    const cfg = await store.load();
+    if (!server.base && !cfg.canvasToken && !cfg.demo) app.quit();
   });
 }
 
@@ -364,26 +366,40 @@ ipcMain.handle("setup:get", async (event) => (fromSetup(event) ? { ...store.publ
 ipcMain.handle("setup:openExternal", (event, url) => {
   if (fromSetup(event)) openExternal(String(url));
 });
+ipcMain.handle("setup:searchSchools", async (event, term) => (fromSetup(event) ? universities.searchSchools(term) : []));
+ipcMain.handle("setup:knownSchools", (event) => (fromSetup(event) ? universities.KNOWN : []));
+ipcMain.handle("setup:demo", async (event) => {
+  if (!fromSetup(event)) return { ok: false, error: "No permitido." };
+  await store.save({ demo: true });
+  setupReason = null;
+  await restartServer();
+  setupWindow?.close();
+  showMain();
+  return { ok: true };
+});
 ipcMain.handle("setup:save", async (event, input) => {
   if (!fromSetup(event)) return { ok: false, error: "No permitido." };
   const cfg = await store.load();
-  const canvasBaseUrl = String(input?.canvasBaseUrl || "").trim().replace(/\/+$/, "");
+  const canvasBaseUrl = universities.normalizeCanvasUrl(input?.canvasBaseUrl) || "";
   const canvasToken = String(input?.canvasToken || "").trim();
   const openaiKey = String(input?.openaiKey || "").trim();
   const openaiModel = ["gpt-6.1-sol", "gpt-6-luna"].includes(input?.openaiModel) ? input.openaiModel : "gpt-6.1-sol";
-  if (!/^https:\/\/[^/]+\/api\/v1$/.test(canvasBaseUrl)) return { ok: false, error: "La dirección de Canvas debe ser https://…/api/v1" };
+  if (!canvasBaseUrl) return { ok: false, error: "Elige tu universidad o escribe la dirección de tu campus Canvas (la que ves en el navegador al entrar)." };
   const token = canvasToken || cfg.canvasToken;
   if (!token) return { ok: false, error: "Falta el token de Canvas." };
   // Se comprueba el token contra Canvas antes de guardarlo.
   try {
     const res = await fetch(`${canvasBaseUrl}/users/self`, { headers: { Authorization: `Bearer ${token}` }, redirect: "manual" });
     if (res.status === 401) return { ok: false, error: "Canvas rechaza el token: revisa que esté bien copiado y no haya caducado." };
+    if (res.status >= 300 && res.status < 400) return { ok: false, error: "Esa dirección redirige a otra página: abre tu Canvas en el navegador y copia la dirección exacta que aparece." };
     if (!res.ok) return { ok: false, error: `Canvas respondió ${res.status}. Revisa la dirección.` };
   } catch {
     return { ok: false, error: "No se pudo conectar con Canvas. Revisa la dirección y tu conexión." };
   }
   if (openaiKey && !/^sk-[A-Za-z0-9_-]{20,}$/.test(openaiKey)) return { ok: false, error: "La clave de OpenAI debe empezar por «sk-»." };
   await store.save({
+    // Con un token de verdad se sale de la demo (sus datos de ejemplo se quedan aparte).
+    demo: false,
     canvasBaseUrl,
     openaiModel,
     canvasToken: canvasToken || undefined,
@@ -427,7 +443,7 @@ async function boot() {
   buildTray();
   updater.start();
   const cfg = await store.load();
-  if (!cfg.canvasToken) {
+  if (!cfg.canvasToken && !cfg.demo) {
     // Primera vez: pedir las claves antes de arrancar.
     openSetup();
     return;

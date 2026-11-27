@@ -16,7 +16,7 @@ const AUXILIARY_NAME =
 
 const DEFAULT_TERM = /default|por defecto|predeterminad|sin periodo/i;
 
-/** Códigos de grupo de la Universidad Europea, p. ej. "(M11-PAGO M11-PAWT)": señal fuerte de asignatura real. */
+/** Códigos de grupo como los de la Universidad Europea, p. ej. "(M11-PAGO M11-PAWT)": señal fuerte de asignatura real (en otras universidades simplemente no aparecen). */
 const SUBJECT_GROUPS = /\((?:[A-Z]\d{2}-[A-Z]{2,}\s*)+\)/;
 
 /** Espacios del grado que no son asignaturas: aula del tutor, comunidad del grado (COM_/TUT_). */

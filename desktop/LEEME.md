@@ -2,7 +2,7 @@
 
 Programa de escritorio que lleva dentro la app de UniHub.
 
-- **Supabase solo para iniciar sesión.** Ningún dato se guarda allí desde el programa.
+- **Supabase solo para iniciar sesión, y es opcional.** Ningún dato se guarda allí desde el programa. Si compilas sin `NEXT_PUBLIC_SUPABASE_URL`, el programa funciona sin cuenta: se abre directamente y nada sale de tu ordenador.
 - **Base de datos** (asignaturas, tareas, clases, transcripciones, apuntes, notas, progreso): Postgres embebido (PGlite) que funciona en memoria y se guarda entero en `%APPDATA%\UniHub\datos\<cuenta>\datos.tar.gz` (unos segundos después de cada cambio, y siempre al salir). Cada guardado escribe un archivo nuevo y lo cambia por el anterior de golpe, así que un corte nunca lo deja a medias; el guardado previo queda en `datos.anterior.tar.gz`. Una por cuenta. Está fuera de la carpeta sincronizada a propósito: una base de datos dentro de Drive/OneDrive se puede corromper.
 - **Carpeta de UniHub** (por defecto `Documentos\UniHub`; se cambia en Ajustes, p. ej. a Google Drive):
 
@@ -59,7 +59,7 @@ npm run dist
 
 Genera `desktop\dist\UniHub-Setup-X.Y.Z.exe`. Ese archivo es lo que le pasas a tu amiga **la primera vez**; después se actualiza solo.
 
-- Compila la app con el `.env.local` de la carpeta del proyecto, pero **solo** toma de ahí la URL y la clave publishable de Supabase, que son públicas.
+- Compila la app con el `.env.local` de la carpeta del proyecto, pero **solo** toma de ahí la URL y la clave publishable de Supabase, que son públicas (y opcionales: sin ellas, modo sin cuenta).
 - Antes de empaquetar busca en el resultado todos tus secretos (token de Canvas, OpenAI, Supabase, CRON…). Si encuentra alguno, **aborta**.
 
 Para probar sin instalar: `npm run dev` (compila y abre el programa; ahí no hay actualizaciones automáticas).
@@ -92,6 +92,8 @@ npm run release
 `npm run release` comprueba el token y que la versión no esté ya publicada, compila, revisa que no haya secretos y sube el instalador. Los programas instalados lo descargan en las próximas horas (o al momento con «Buscar actualizaciones»).
 
 ## Dar acceso a otra persona
+
+Si compilaste **sin Supabase**, basta con pasarle el `.exe`: no necesita cuenta. Si lo compilaste con Supabase:
 
 1. En Supabase → **Authentication → Users → Add user**: su correo y una contraseña temporal (marca «Auto Confirm User»).
 2. **Recomendado**: en Authentication → Sign In / Providers, desactiva **«Allow new users to sign up»**. Así solo entra quien tú crees.

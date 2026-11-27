@@ -11,7 +11,7 @@ function when(iso: string | null): string {
 }
 
 /** Ajustes propios del programa de escritorio: carpeta (Drive/OneDrive), claves, sincronización e importación. */
-export function DesktopSettings() {
+export function DesktopSettings({ canImport = true }: { canImport?: boolean }) {
   const [info, setInfo] = useState<DesktopInfo | null>(null);
   const [suggested, setSuggested] = useState<SuggestedFolder[]>([]);
   const [msg, setMsg] = useState<string | null>(null);
@@ -138,8 +138,8 @@ export function DesktopSettings() {
         </p>
       )}
 
-      {/* Importar */}
-      <div className="rounded-md border border-border bg-muted/40 p-2.5">
+      {/* Importar (no en el modo solo local: no hay web de la que traer datos) */}
+      {canImport && <div className="rounded-md border border-border bg-muted/40 p-2.5">
         <p className="font-medium">¿Ya usabas UniHub en la web?</p>
         <p className="mt-0.5 text-xs text-muted-foreground">
           Copia a este ordenador tus clases, transcripciones, apuntes, notas y progreso (y los deja también como archivos en tu carpeta). Se hace una sola vez, recién instalado; lo que hay en la web no se toca.
@@ -159,7 +159,7 @@ export function DesktopSettings() {
         >
           {busy === "import" ? "Copiando…" : "Traer mis datos de la web"}
         </Button>
-      </div>
+      </div>}
     </div>
   );
 }

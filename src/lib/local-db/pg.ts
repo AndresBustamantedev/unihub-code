@@ -4,6 +4,8 @@ import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readdirSync, rea
 import { safeSegment } from "@/lib/local-files-names";
 import type { PGlite } from "@electric-sql/pglite";
 import { LOCAL_MIGRATIONS } from "./migrations.generated";
+import { DEMO_USER, isDemo } from "@/lib/local-only";
+import { seedDemoIfEmpty } from "./demo";
 
 /**
  * Base de datos local del programa de escritorio: Postgres embebido (PGlite), guardado en la
@@ -296,6 +298,8 @@ async function openLocked(uid: string, email: string | null, base: string, relea
   db ??= await PGlite.create({ parsers });
 
   await prepareDatabase(db, uid, email);
+  // Modo demo: datos de ejemplo la primera vez (solo en la base del usuario de la demo).
+  if (isDemo() && uid === DEMO_USER.id) await seedDemoIfEmpty(db, uid);
   const slot: Slot = { db, uid, file, dirty: true, saving: null, timer: null, firstDirtyAt: Date.now(), release };
   registry().slots.set(uid, slot);
   watchWrites(slot);

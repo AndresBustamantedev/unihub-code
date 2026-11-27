@@ -1,4 +1,5 @@
 import "server-only";
+import { isLocalOnly } from "@/lib/local-only";
 import { cookies } from "next/headers";
 import { AI_MODEL_COOKIE, AI_PREF_COOKIE, readAiConfig, type AiConfig } from "./provider";
 import { TRIAL_MODEL, trialUrl } from "./trial";
@@ -14,7 +15,8 @@ export async function readAiConfigFromCookies(providerOverride?: string | null, 
   const store = await cookies();
   const own = readAiConfig(process.env, providerOverride ?? store.get(AI_PREF_COOKIE)?.value ?? null, modelOverride ?? store.get(AI_MODEL_COOKIE)?.value ?? null);
   if (own.ok) return { ...own, trial: false };
-  if (process.env.UNIHUB_TRIAL === "0" || !trialUrl()) return own;
+  // Sin cuenta (programa sin Supabase) no hay prueba gratuita: hace falta clave propia.
+  if (process.env.UNIHUB_TRIAL === "0" || !trialUrl() || isLocalOnly()) return own;
   const token = await sessionToken();
   if (!token) return { ok: false, reason: "Inicia sesión para usar la prueba gratuita de IA." };
   return { ok: true, trial: true, config: { provider: "openai", apiKey: "", model: TRIAL_MODEL, proxy: { url: trialUrl(), token } } };
@@ -40,7 +42,7 @@ export interface TrialStatus {
 
 /** Sin clave propia: estado de la prueba gratuita (lo pregunta a la web de UniHub). */
 export async function getTrialStatus(): Promise<TrialStatus | null> {
-  if (!trialUrl()) return { enabled: false, used: 0, limit: 0 };
+  if (!trialUrl() || isLocalOnly()) return { enabled: false, used: 0, limit: 0 };
   const token = await sessionToken();
   if (!token) return null;
   try {

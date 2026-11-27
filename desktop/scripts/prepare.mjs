@@ -124,5 +124,5 @@ if (leaks.length) {
   process.exit(1);
 }
 
-const pub = env.NEXT_PUBLIC_SUPABASE_URL ? new URL(env.NEXT_PUBLIC_SUPABASE_URL).host : "(sin configurar)";
+const pub = env.NEXT_PUBLIC_SUPABASE_URL ? new URL(env.NEXT_PUBLIC_SUPABASE_URL).host : "sin configurar → modo solo local, sin inicio de sesión";
 console.log(`\n✓ Servidor listo en desktop/server (Supabase: ${pub}). Secretos comprobados: ${secrets.length}, ninguno incluido.`);

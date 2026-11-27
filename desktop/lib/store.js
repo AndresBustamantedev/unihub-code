@@ -12,7 +12,8 @@ const crypto = require("node:crypto");
 const { app, safeStorage } = require("electron");
 
 const SECRET_FIELDS = ["canvasToken", "openaiKey", "credentialsKey"];
-const DEFAULT_CANVAS_URL = "https://campus.europaeducationgroup.es/api/v1";
+// Sin valor por defecto: la universidad se elige en la configuración inicial.
+const DEFAULT_CANVAS_URL = "";
 
 function file() {
   return path.join(app.getPath("userData"), "config.json");
@@ -66,6 +67,8 @@ async function load() {
     // Caducidad del token de Canvas (la da Canvas) y avisos ya mostrados sobre ella.
     canvasTokenExpiresAt: raw.canvasTokenExpiresAt || null,
     tokenAlerts: Array.isArray(raw.tokenAlerts) ? raw.tokenAlerts : [],
+    // Modo demo: datos de ejemplo, sin Canvas ni cuenta.
+    demo: raw.demo === true,
   };
   const rotate = {};
   for (const k of SECRET_FIELDS) {
@@ -106,6 +109,7 @@ function publicView(cfg) {
     filesDir: cfg.filesDir,
     hasCanvasToken: !!cfg.canvasToken,
     hasOpenAiKey: !!cfg.openaiKey,
+    demo: cfg.demo,
   };
 }
 

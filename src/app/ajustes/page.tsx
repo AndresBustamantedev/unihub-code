@@ -17,6 +17,7 @@ import { UniversityLoginForm } from "./university-login-form";
 import { UniversitySecretForm } from "./university-secret-form";
 import { DesktopSettings } from "./desktop-settings";
 import { isDesktop } from "@/lib/desktop";
+import { isLocalOnly } from "@/lib/local-only";
 import { loadCloudAccess } from "@/features/admin/queries";
 import { readCloudState } from "@/features/desktop/cloud-export";
 import { AdminUsers } from "./admin-users";
@@ -38,6 +39,7 @@ const STATUS: Record<NotificationRow["status"], string> = {
 export default async function AjustesPage() {
   const user = await requirePageUser("/ajustes");
   const desktop = isDesktop();
+  const localOnly = isLocalOnly();
   const env = getOptionalServerEnv();
   const supabase = await createSupabaseServerClient();
   const [{ data: notifications, error }, { count: devices }, { data: lastAuto }, usage, { data: profile }, store, access] = await Promise.all([
@@ -68,10 +70,12 @@ export default async function AjustesPage() {
           <CanvasTokenNotice />
         </Suspense>
 
-        <section className="rounded-lg border border-border bg-card p-3">
-          <h2 className="mb-2 text-sm font-semibold">Contraseña</h2>
-          <PasswordForm />
-        </section>
+        {!localOnly && (
+          <section className="rounded-lg border border-border bg-card p-3">
+            <h2 className="mb-2 text-sm font-semibold">Contraseña</h2>
+            <PasswordForm />
+          </section>
+        )}
 
         <section className="rounded-lg border border-border bg-card p-3">
           <h2 className="mb-1 text-sm font-semibold">Acceso a Teams y Stream</h2>
@@ -89,7 +93,7 @@ export default async function AjustesPage() {
           {desktop && usage ? (
             <p className="text-sm">
               Tus datos ocupan <span className="tabular font-semibold">{formatBytes(usage.databaseBytes)}</span> en este ordenador (sin límite: es tu disco). Lo que más ocupa:{" "}
-              {usage.top.map((t) => `${t.label} ${formatBytes(t.bytes)}`).join(", ")}. {access.enabled ? "En Supabase está tu cuenta de acceso y la copia que subas a la web." : "En Supabase solo está tu cuenta de acceso."}
+              {usage.top.map((t) => `${t.label} ${formatBytes(t.bytes)}`).join(", ")}. {localOnly ? "Este programa funciona sin cuenta: nada sale de tu ordenador." : access.enabled ? "En Supabase está tu cuenta de acceso y la copia que subas a la web." : "En Supabase solo está tu cuenta de acceso."}
             </p>
           ) : usage ? (
             <>
@@ -126,7 +130,7 @@ export default async function AjustesPage() {
         {desktop && (
           <section className="rounded-lg border border-primary/30 bg-card p-3">
             <h2 className="mb-2 text-sm font-semibold">Programa de escritorio</h2>
-            <DesktopSettings />
+            <DesktopSettings canImport={!localOnly} />
           </section>
         )}
 
@@ -140,7 +144,11 @@ export default async function AjustesPage() {
         {desktop && (
           <section className="rounded-lg border border-border bg-card p-3">
             <h2 className="mb-2 text-sm font-semibold">Copia en la web</h2>
-            {access.enabled ? (
+            {localOnly ? (
+              <p className="text-sm text-muted-foreground">
+                Este programa se compiló sin Supabase, así que funciona sin cuenta y sin copia en la web. Tus datos están en este ordenador y en tu carpeta de UniHub, con copia de seguridad diaria.
+              </p>
+            ) : access.enabled ? (
               <CloudBackup state={readCloudState(user.id)} />
             ) : (
               <p className="text-sm text-muted-foreground">

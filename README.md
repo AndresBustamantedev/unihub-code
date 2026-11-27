@@ -1,14 +1,31 @@
 # UniHub · beta
 
+**Español** · [English](README.en.md)
+
 Tu actividad universitaria de **Canvas**, tus **clases** y tus **apuntes** en un solo sitio.
 
 UniHub se conecta a Canvas con tu propio token, ordena tus asignaturas, tareas, anuncios y material, te avisa de lo que se acerca y te ayuda a estudiar con IA: resúmenes de clase, búsqueda en todo lo que tienes, preguntas con fuentes y tarjetas de repaso.
 
-Es un proyecto personal de código abierto pensado para que **cada persona lo instale con sus propias claves**. Funciona como web (en tu ordenador o en Vercel) o como **programa de Windows** con todos los datos en tu ordenador.
+Nació para la Universidad Europea y funciona con **cualquier universidad que use Canvas**. Es un proyecto personal de código abierto pensado para que **cada persona lo instale con sus propias claves**. Funciona como web (en tu ordenador o en Vercel) o como **programa de Windows** con todos los datos en tu ordenador.
 
 > **Beta.** Funciona y se usa a diario, pero puede tener fallos. Haz copias de seguridad (el programa las hace solo) y abre un *issue* si algo no va.
 >
 > **No es oficial.** No tiene relación con Instructure (Canvas) ni con ninguna universidad. Usa la API de Canvas con tu token personal, como cualquier integración propia: revisa las normas de uso de tu universidad.
+
+![Inicio de UniHub: la semana con clases y entregas, tarjetas de repaso para hoy, novedades y últimas clases](docs/capturas/inicio.png)
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/capturas/asignatura.png" alt="Página de una asignatura con entregas, horario, profesorado y examen"><br><sub>Cada asignatura: entregas, horario, novedades y repaso para el examen.</sub></td>
+    <td width="50%"><img src="docs/capturas/clase.png" alt="Clase con su estado de estudio y apuntes generados por IA"><br><sub>Cada clase: transcripción, progreso y apuntes con IA.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/capturas/repasar.png" alt="Repaso de tarjetas con repetición espaciada"><br><sub>Tarjetas con repetición espaciada, por asignatura o por examen.</sub></td>
+    <td><img src="docs/capturas/buscar.png" alt="Búsqueda en clases, apuntes y material"><br><sub>Búsqueda en todo lo que tienes, sin importar tildes.</sub></td>
+  </tr>
+</table>
+
+<sub>Capturas hechas con el modo demo: todos los datos son inventados.</sub>
 
 ---
 
@@ -35,9 +52,54 @@ Es un proyecto personal de código abierto pensado para que **cada persona lo in
 - **Exámenes**: pones la fecha y qué entra, y el repaso se organiza para que llegues con todo visto.
 
 **Programa de Windows**
-- Todos tus datos en tu ordenador (Postgres embebido). Supabase solo se usa para iniciar sesión.
+- Todos tus datos en tu ordenador (Postgres embebido). Puede funcionar **sin ninguna cuenta**: Supabase es opcional y solo sirve para iniciar sesión.
 - Carpeta de UniHub con todo ordenado por asignatura (material, transcripciones, apuntes en Markdown y vídeos), que puedes poner dentro de Google Drive u OneDrive.
 - Copia de seguridad diaria, recuperación automática si algo se daña y actualizaciones automáticas (opcional).
+
+---
+
+## Pruébalo sin Canvas (modo demo)
+
+Para ver UniHub funcionando no necesitas Canvas, ni Supabase, ni claves. El modo demo carga asignaturas, tareas, clases con apuntes, tarjetas y un examen inventados.
+
+- **En el navegador**, con el código descargado (ver [Requisitos](#requisitos)):
+  ```bash
+  npm run demo
+  ```
+  y abre http://localhost:3000. Los datos de ejemplo se guardan en una carpeta temporal y no tocan nada más.
+- **En el programa de Windows:** en la configuración inicial, pulsa **«Probar con datos de ejemplo»**. Cuando quieras usar tus datos, pulsa **«Conectar mi Canvas»** en la franja de arriba; la demo se queda aparte y no se mezcla con lo tuyo.
+
+En la demo no se sincroniza con Canvas, y la IA solo funciona si añades tu clave de OpenAI.
+
+> ¿Por qué no hay una cuenta de Canvas de prueba? Instructure cerró en 2026 las cuentas gratuitas para profesores, que eran la forma habitual de probar la API, y su entorno de pruebas oficial es de pago. Por eso UniHub trae sus propios datos de ejemplo.
+
+---
+
+## ¿Funciona con mi universidad?
+
+Sí, si tu universidad usa **Canvas** (de Instructure). UniHub nació en la Universidad Europea, pero solo usa la API estándar de Canvas, así que sirve para cualquier campus Canvas.
+
+- **Programa de Windows:** en la configuración inicial, escribe el nombre de tu universidad y elígela de la lista. Los resultados salen del buscador oficial de Canvas, el mismo que usa su app móvil en «Encuentra tu centro». Si no aparece, pega la dirección que ves en el navegador al entrar en tu campus: vale tal cual, por ejemplo `https://campus.tu-universidad.es/courses`.
+- **Web:** pon la dirección en `CANVAS_BASE_URL`, terminada en `/api/v1`.
+
+**Cómo saber la dirección de tu campus:** entra en Canvas desde el navegador y mira la barra de direcciones. Suele ser `tu-universidad.instructure.com`, `canvas.tu-universidad.edu` o un dominio propio. La dirección para UniHub es esa misma con `/api/v1` al final.
+
+Algunos campus Canvas conocidos (vienen ya en la lista del programa):
+
+| Universidad | País | `CANVAS_BASE_URL` |
+|---|---|---|
+| Universidad Europea | España | `https://campus.europaeducationgroup.es/api/v1` |
+| UCAM · Universidad Católica de Murcia | España | `https://cv.ucam.edu/api/v1` |
+| ENAE Business School | España | `https://enae.instructure.com/api/v1` |
+| Pontificia Universidad Católica de Chile | Chile | `https://cursos.canvas.uc.cl/api/v1` |
+| Universidad de los Andes | Chile | `https://canvas.uandes.cl/api/v1` |
+
+¿Tu universidad usa Canvas y no está en la lista? Abre un *issue* o un *pull request* añadiéndola en `desktop/lib/universities.js`.
+
+Algunas cosas pueden variar según la universidad:
+- **Token:** después del incidente de seguridad de Canvas de 2026, algunas universidades ya no dejan a los estudiantes crear tokens, los limitan a pocos días o los dan solo bajo petición. Si en tu perfil de Canvas no aparece «+ Nuevo token de acceso», pregunta al soporte de Canvas de tu universidad; sin token, UniHub no puede conectarse.
+- **Clasificación de asignaturas:** UniHub separa las asignaturas de los espacios que no lo son (comunidades, tutorías…) por su nombre y sus fechas. Con los códigos de grupo de la Universidad Europea acierta más; en otras universidades puedes corregir a mano qué asignaturas seguir.
+- **Clases grabadas:** la importación de transcripciones está pensada para Microsoft Teams (`.vtt` o `.docx`), pero también acepta texto pegado.
 
 ---
 
@@ -50,16 +112,17 @@ Es un proyecto personal de código abierto pensado para que **cada persona lo in
 | Material y vídeos guardados en local | Sí | No | No |
 | Sincronización automática | Sí (cada 20 min con el programa abierto) | Mientras esté abierta | Sí (cron) |
 | Coste | Gratis | Gratis | Gratis (plan Hobby, uso personal) |
+| Necesita Supabase | No (opcional) | Sí | Sí |
 | Dificultad | Media (hay que compilar el instalador) | Baja | Media |
 
-En los tres casos necesitas un **proyecto de Supabase** (gratis) para iniciar sesión. Las claves de Canvas y OpenAI son **las tuyas**: nadie más las ve.
+Las claves de Canvas y OpenAI son **las tuyas**: nadie más las ve.
 
 ---
 
 ## Requisitos
 
 - **Node.js 20.9 o superior** (recomendado 22 LTS) y **Git**.
-- Una cuenta gratuita de **Supabase**: https://supabase.com
+- Para la web: una cuenta gratuita de **Supabase**: https://supabase.com (el programa de Windows no la necesita).
 - Tu **token de Canvas** (te explico cómo sacarlo abajo).
 - Opcional: una **clave de OpenAI** para las funciones de IA: https://platform.openai.com
 - Para el programa: **Windows 10/11**.
@@ -83,7 +146,7 @@ npm install
 3. Ponle un propósito («UniHub») y la fecha de caducidad más lejana que te deje. Algunas universidades limitan los tokens a 30 días: UniHub te avisará antes de que caduque.
 4. Copia el token; solo se muestra una vez.
 
-Necesitas también la **dirección de tu campus** terminada en `/api/v1`, por ejemplo `https://tu-universidad.instructure.com/api/v1`.
+Para la web necesitas también la **dirección de tu campus** terminada en `/api/v1`, por ejemplo `https://tu-universidad.instructure.com/api/v1` (mira [¿Funciona con mi universidad?](#funciona-con-mi-universidad)). En el programa basta con elegir tu universidad de la lista.
 
 ### OpenAI (opcional)
 
@@ -91,7 +154,9 @@ En https://platform.openai.com → **API keys → Create new secret key**. OpenA
 
 ---
 
-## Paso 2 · Supabase
+## Paso 2 · Supabase (solo para la web o si quieres inicio de sesión)
+
+Si vas a usar **solo el programa de Windows sin cuenta**, sáltate este paso entero.
 
 1. Crea un proyecto en https://supabase.com (gratis).
 2. **Project Settings → API**: apunta la **Project URL** y la **publishable key** (`sb_publishable_…`).
@@ -100,7 +165,7 @@ En https://platform.openai.com → **API keys → Create new secret key**. OpenA
 
 ### Solo para la web: la base de datos
 
-Si vas a usar **solo el programa de Windows**, sáltate esto: el programa crea su propia base de datos en tu ordenador.
+El programa de Windows crea su propia base de datos en tu ordenador; esto solo hace falta para la web.
 
 Para la web, ejecuta las migraciones de `supabase/migrations/` **en orden** (de `0001` a la última). Dos formas:
 
@@ -152,12 +217,16 @@ Para tenerla siempre lista sin modo desarrollo: `npm run build` y `npm start`.
 
 En Windows, con Node.js instalado:
 
-1. En la carpeta del proyecto, crea `.env.local` solo con:
-   ```dotenv
-   NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxxx
-   ```
-   El programa solo toma de aquí estas dos, que son públicas. Antes de empaquetar comprueba que ningún secreto acaba dentro del programa, y si encuentra alguno, se para.
+1. Elige cómo entrar:
+   - **Sin cuenta (lo más sencillo):** no crees `.env.local`, o déjalo sin las variables de Supabase. El programa se abre directamente, sin pantalla de inicio de sesión, y nada sale de tu ordenador salvo las llamadas a Canvas y a la IA.
+   - **Con inicio de sesión:** crea `.env.local` en la carpeta del proyecto solo con:
+     ```dotenv
+     NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxxx
+     ```
+     Sirve para que varias personas usen el mismo instalador con cuentas separadas, para la copia en la web y para la IA de prueba.
+
+   El programa solo toma de `.env.local` estas dos variables, que son públicas. Antes de empaquetar comprueba que ningún secreto acaba dentro del programa, y si encuentra alguno, se para.
 2. Prueba el programa sin instalarlo:
    ```bash
    cd desktop
@@ -169,7 +238,9 @@ En Windows, con Node.js instalado:
    npm run dist
    ```
    Lo encontrarás en `desktop/dist/UniHub-Setup-X.Y.Z.exe`.
-4. Al abrirlo por primera vez te pide la dirección de tu Canvas, tu token y, si quieres, tu clave de OpenAI. Se guardan **cifradas por Windows** en tu ordenador y nunca se suben a ningún sitio.
+4. Al abrirlo por primera vez te pide tu universidad (la buscas por su nombre), tu token de Canvas y, si quieres, tu clave de OpenAI. Se guardan **cifradas por Windows** en tu ordenador y nunca se suben a ningún sitio. Si solo quieres verlo, pulsa **«Probar con datos de ejemplo»**.
+
+<img src="docs/capturas/configuracion.png" alt="Configuración inicial del programa: buscador de universidad, token de Canvas, clave de OpenAI y botón para probar con datos de ejemplo" width="420">
 
 El instalador no está firmado (un certificado de firma cuesta dinero). La primera vez Windows mostrará «Windows protegió tu PC»: pulsa **Más información → Ejecutar de todas formas**.
 
@@ -179,7 +250,7 @@ Más detalles del programa (carpeta de UniHub, Google Drive, copias de seguridad
 
 ## Opcional · Compartir UniHub con amigos
 
-- **Programa:** pásales tu instalador y créales un usuario en Supabase (Authentication → Add user). Cada uno pone **su** token de Canvas y **su** clave de OpenAI; sus datos quedan en su ordenador.
+- **Programa:** pásales tu instalador. Si lo compilaste sin Supabase, cada uno lo usa sin cuenta; si lo compilaste con Supabase, créales un usuario (Authentication → Add user). Cada uno pone **su** token de Canvas y **su** clave de OpenAI; sus datos quedan en su ordenador.
 - **Copia en la web:** desde Ajustes → Usuarios (administrador) puedes permitir que alguien guarde una copia de sus datos en tu Supabase. Si no lo activas, Supabase rechaza cualquier dato suyo.
 - **Prueba gratuita de IA:** si quieres que prueben la IA sin poner su clave, tu web puede hacer de intermediaria con **tu** clave, siempre con el modelo económico y con un límite al mes por persona. La clave nunca sale de tu web. Para activarla:
   1. En Vercel: `UNIHUB_TRIAL_ENABLED=1`, `SUPABASE_SECRET_KEY` y, recomendado, `TRIAL_OPENAI_API_KEY` (de un proyecto de OpenAI con tope de gasto). El límite por persona se cambia con `TRIAL_MONTHLY_USD` (por defecto 0,50 $).
@@ -202,6 +273,7 @@ Más detalles del programa (carpeta de UniHub, Google Drive, copias de seguridad
 
 ```bash
 npm run dev          # web en http://localhost:3000
+npm run demo         # la web con datos de ejemplo, sin claves
 npm test             # tests (Vitest)
 npm run typecheck    # TypeScript
 npm run canvas:check # comprueba la conexión con Canvas usando .env.local

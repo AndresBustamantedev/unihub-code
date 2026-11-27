@@ -103,7 +103,8 @@ class LocalServer {
       AI_DEFAULT_PROVIDER: "openai",
       OPENAI_MODEL: cfg.openaiModel,
     };
-    if (cfg.canvasToken) env.CANVAS_ACCESS_TOKEN = cfg.canvasToken;
+    if (cfg.demo) env.UNIHUB_DEMO = "1";
+    else if (cfg.canvasToken) env.CANVAS_ACCESS_TOKEN = cfg.canvasToken;
     if (cfg.openaiKey) env.OPENAI_API_KEY = cfg.openaiKey;
     // utilityProcess no admite variables sin valor (p. ej. HOME no existe en Windows).
     for (const k of Object.keys(env)) if (typeof env[k] !== "string" || env[k] === "") delete env[k];

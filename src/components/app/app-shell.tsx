@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import { Suspense, type ReactNode } from "react";
 import { Bell, BookOpen, CalendarCheck, Home, Layers, LogOut, Search, Settings, Stethoscope, Video, type LucideIcon } from "lucide-react";
 import { signOut } from "@/app/login/actions";
+import { isDemo, isLocalOnly } from "@/lib/local-only";
+import { DemoBanner } from "./demo-banner";
 import { countUnreadChanges } from "@/features/content/queries";
 import { countUnreadConversations } from "@/features/inbox/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -91,11 +93,13 @@ export async function AppShell({ active, children, wide = false }: { active: Hre
         <nav className="mt-auto flex flex-col gap-0.5 border-t border-border pt-3" aria-label="Cuenta">
           {SECONDARY.map((it) => item(it))}
           <ThemeToggle initial={theme} className="w-full justify-start px-2.5" />
-          <form action={logoutAction}>
-            <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
-              <LogOut className="size-4" /> Salir
-            </button>
-          </form>
+          {!isLocalOnly() && (
+            <form action={logoutAction}>
+              <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
+                <LogOut className="size-4" /> Salir
+              </button>
+            </form>
+          )}
         </nav>
       </aside>
 
@@ -119,7 +123,10 @@ export async function AppShell({ active, children, wide = false }: { active: Hre
           </div>
         </header>
 
-        <main className={cn("mx-auto w-full px-4 pb-24 pt-5 lg:px-8 lg:pb-10 lg:pt-8", wide ? "max-w-[100rem]" : "max-w-5xl")}>{children}</main>
+        <main className={cn("mx-auto w-full px-4 pb-24 pt-5 lg:px-8 lg:pb-10 lg:pt-8", wide ? "max-w-[100rem]" : "max-w-5xl")}>
+          {isDemo() && <DemoBanner />}
+          {children}
+        </main>
 
         {/* Móvil: barra inferior */}
         <nav aria-label="Principal" className="fixed inset-x-0 bottom-0 z-20 flex border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">

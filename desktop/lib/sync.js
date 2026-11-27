@@ -70,6 +70,7 @@ class Scheduler {
     this.running = true;
     try {
       const { server, store } = this.deps;
+      if ((await store.load()).demo) return { ok: false, message: "Son datos de ejemplo: conecta tu Canvas para sincronizar los tuyos." };
       const sync = await request(server, "POST", "/api/desktop/sync");
       if (sync.status === 401) return { ok: false, message: "Inicia sesión en UniHub para sincronizar." };
       if (sync.status !== 200) return { ok: false, message: "No se pudo sincronizar (mira «Diagnóstico»)." };

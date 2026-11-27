@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { isEmailAllowed } from "@/lib/env/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isLocalOnly, localUser } from "@/lib/local-only";
 
 export interface AuthUser {
   id: string;
@@ -19,6 +20,7 @@ export type AuthResult =
  * `cache` evita repetir la verificación varias veces en la misma petición.
  */
 export const requireUser = cache(async (): Promise<AuthResult> => {
+  if (isLocalOnly()) return { ok: true, user: { ...localUser() } };
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getClaims();
   const claims = data?.claims;

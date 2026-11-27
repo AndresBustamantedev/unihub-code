@@ -4,8 +4,12 @@ import type { Database } from "./database.types";
 import { cookies } from "next/headers";
 import { getPublicEnv } from "@/lib/env/public";
 import { isDesktop } from "@/lib/desktop";
+import { isLocalOnly } from "@/lib/local-only";
+import { createOfflineClient } from "./offline";
 
 function createRemoteClient(cookieStore: Awaited<ReturnType<typeof cookies>>) {
+  // Programa compilado sin Supabase: usuario local fijo y sin nube.
+  if (isLocalOnly()) return createOfflineClient();
   const env = getPublicEnv();
   return createServerClient<Database>(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
     cookies: {
