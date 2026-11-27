@@ -1,0 +1,24 @@
+# Dependencias y compilaciones
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Secretos: NUNCA se suben (sí el ejemplo)
+.env
+.env*
+!.env.example
+
+# Vercel
+.vercel/
+
+# Programa de escritorio (se generan al compilar)
+desktop/server/
+desktop/dist/
+
+# Generado por Next.js en desarrollo
+AGENTS.md
+
+# Copias temporales
+_to_delete/

@@ -1,0 +1,85 @@
+{
+  "name": "unihub-desktop",
+  "productName": "UniHub",
+  "version": "0.1.0",
+  "description": "UniHub para Windows: Canvas, clases y apuntes en un solo sitio",
+  "author": "UniHub",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "build:server": "node scripts/prepare.mjs",
+    "start": "electron .",
+    "dev": "node scripts/prepare.mjs && electron .",
+    "dist": "node scripts/installer.mjs",
+    "release": "node scripts/installer.mjs --publicar",
+    "nueva-version": "npm version patch --no-git-tag-version"
+  },
+  "devDependencies": {
+    "electron": "45.5.0",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "com.unihub.desktop",
+    "productName": "UniHub",
+    "copyright": "UniHub",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "setup-preload.js",
+      "setup.html",
+      "setup.css",
+      "setup.js",
+      "lib/**",
+      "assets/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "server",
+        "to": "server",
+        "filter": [
+          "**/*",
+          "!node_modules/**",
+          "!**/.env*"
+        ]
+      },
+      {
+        "from": "server/node_modules",
+        "to": "server/node_modules",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico",
+      "artifactName": "UniHub-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "UniHub",
+      "uninstallDisplayName": "UniHub",
+      "deleteAppDataOnUninstall": false
+    }
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.11"
+  },
+  "license": "MIT"
+}

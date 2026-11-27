@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' file:; style-src 'self' file:; img-src 'self' file:">
+<title>UniHub · Configuración</title>
+<link rel="stylesheet" href="setup.css">
+</head>
+<body>
+<main>
+  <header>
+    <img src="assets/icon.png" alt="" width="40" height="40">
+    <div>
+      <h1>Configura UniHub en este ordenador</h1>
+      <p class="muted">Las claves se guardan cifradas por Windows en este ordenador y nunca se suben a internet.</p>
+    </div>
+  </header>
+
+  <form id="form" novalidate>
+    <p class="notice" id="tokenNotice" hidden>Tu token de Canvas ha caducado o está a punto de caducar. Crea uno nuevo en Canvas, pégalo aquí y pulsa «Guardar»: lo demás no cambia.</p>
+    <fieldset>
+      <legend>Canvas</legend>
+      <label for="canvasToken">Token de acceso de Canvas</label>
+      <input id="canvasToken" name="canvasToken" type="password" autocomplete="off" spellcheck="false">
+      <p class="hint" id="tokenHint">En Canvas: <strong>Cuenta → Configuración → «+ Nuevo token de acceso»</strong>. Ponle la fecha de vencimiento más lejana que te deje (Canvas permite como mucho 30 días), copia el token y pégalo aquí. UniHub te avisará unos días antes de que caduque. <a href="#" id="openCanvas">Abrir Canvas</a></p>
+
+      <details>
+        <summary>Dirección de Canvas (normalmente no hay que tocarla)</summary>
+        <input id="canvasBaseUrl" name="canvasBaseUrl" type="url" spellcheck="false">
+      </details>
+    </fieldset>
+
+    <fieldset>
+      <legend>Inteligencia artificial <span class="muted">(opcional)</span></legend>
+      <label for="openaiKey">Clave de OpenAI</label>
+      <input id="openaiKey" name="openaiKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-…">
+      <p class="hint">Para resúmenes, apuntes, tarjetas y preguntas sobre los PDF. <strong>Puedes dejarla en blanco</strong>: si tu cuenta tiene la prueba gratuita de UniHub, usarás la IA económica con un límite al mes. Para usarla sin límite, crea tu clave en <a href="#" id="openOpenAI">platform.openai.com</a> (cobra por uso a tu cuenta).</p>
+      <label class="check" id="removeRow" hidden><input type="checkbox" id="removeOpenAi"> Quitar la clave guardada</label>
+
+      <span class="label">Modelo</span>
+      <div class="models" role="radiogroup">
+        <label class="model"><input type="radio" name="openaiModel" value="gpt-6.1-sol"><span><strong>Sol</strong> · mejor calidad</span></label>
+        <label class="model"><input type="radio" name="openaiModel" value="gpt-6-luna"><span><strong>Luna</strong> · más barato</span></label>
+      </div>
+    </fieldset>
+
+    <p id="error" class="error" role="alert" hidden></p>
+    <div class="actions">
+      <button type="submit" id="save">Guardar y abrir UniHub</button>
+    </div>
+  </form>
+</main>
+<script src="setup.js"></script>
+</body>
+</html>

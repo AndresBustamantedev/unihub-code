@@ -1,0 +1,11 @@
+# No subir a Vercel: secretos locales, dependencias y copias temporales
+.env
+.env*.local
+node_modules
+.next
+/_to_delete
+*.zip
+
+# Programa de escritorio: se compila aparte
+# (con «/» delante: solo la carpeta de la raíz, no src/features/desktop)
+/desktop

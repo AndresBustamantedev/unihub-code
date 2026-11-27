@@ -1,0 +1,57 @@
+{
+  "name": "unihub",
+  "version": "0.1.0-beta",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.9"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "canvas:check": "tsx --conditions=react-server --env-file=.env.local scripts/check-canvas.ts",
+    "canvas:courses": "tsx --conditions=react-server --env-file=.env.local scripts/preview-courses.ts",
+    "db:local-migrations": "node scripts/gen-local-migrations.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.6.0",
+    "@fontsource-variable/onest": "^5.3.1",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "fflate": "^0.8.3",
+    "lucide-react": "^1.73.0",
+    "mammoth": "^1.13.0",
+    "next": "^16.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-markdown": "^10.1.0",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^3.7.0",
+    "unpdf": "^2.2.0",
+    "web-push": "^4.0.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/web-push": "^3.6.4",
+    "postcss": "^8.5.33",
+    "tailwindcss": "^4.3.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  },
+  "description": "UniHub: tu actividad de Canvas, tus clases y tus apuntes en un solo sitio (web y programa de Windows).",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AndresBustamantedev/unihub-code.git"
+  }
+}

@@ -1,0 +1,24 @@
+-- Programa la sincronización cada 20 min desde Supabase (gratis, sin depender del plan de Vercel).
+-- Ejecutar en el SQL Editor DESPUÉS de desplegar la app. Sustituye los dos valores <...>.
+create extension if not exists pg_cron;
+create extension if not exists pg_net;
+
+select vault.create_secret('<CRON_SECRET>', 'unihub_cron_secret');
+
+select cron.schedule(
+  'unihub-sync',
+  '*/20 * * * *',
+  $$
+  select net.http_post(
+    url := 'https://<TU-APP>.vercel.app/api/cron/sync',
+    headers := jsonb_build_object(
+      'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'unihub_cron_secret')
+    ),
+    timeout_milliseconds := 55000
+  );
+  $$
+);
+
+-- Ver ejecuciones:   select * from cron.job_run_details order by start_time desc limit 10;
+-- Ver respuestas:    select status_code, content from net._http_response order by created desc limit 5;
+-- Desactivar:        select cron.unschedule('unihub-sync');
